@@ -2,6 +2,20 @@ from role import Role
 from user import User
 from config import ROLE_TYPES,ACTION_TYPES,ROLES,USERS
 
+#Validation functions
+def is_valid_action_types(action_types):
+    for action_type in action_types:
+        if (action_type not in ACTION_TYPES):
+            return False
+    return True
+
+def is_valid_role_type(role_type):
+    for role in ROLES:
+        if role_type==role:
+            return True
+    return False
+
+
 
 #Initialisation with some users and resources
 def app_init():
@@ -28,7 +42,7 @@ def user_login():
             user_found=True
             break
     if user_found==False:
-        print("Invalid user name provided! Try again! ")
+        print("Invalid user name provided! Try again!")
         user_login()
     else:
         if current_user.user_name == "admin":
@@ -41,6 +55,7 @@ def admin_options(current_user):
     print("Press 1 to login as another user")
     print("Press 2 to create user")
     print("Press 3 to edit role")
+    print("Press 4 to exit")
     option=int(input())
     if option==1:
         user_login()
@@ -48,6 +63,8 @@ def admin_options(current_user):
         create_user()
     elif option==3:
         edit_role(current_user)
+    elif option==4:
+        exit(0)
     else:
         print("Invalid options! Please try again!")
         admin_options()
@@ -57,16 +74,24 @@ def user_options(current_user):
     print("Press 1 to login as another user")
     print("Press 2 to view roles")
     print("Press 3 to access resource")
+    print("Press 4 to exit")
     option=int(input())
     if option==1:
         user_login()
     elif option==2:
-        create_user()
+        view_roles(current_user)
     elif option==3:
         check_access(current_user.user_name)
+    elif option==4:
+        exit(1)
     else:
         print("Invalid options! Please try again!")
         admin_options()
+
+def view_roles(current_user):
+    print("Roles available for "+current_user.user_name+" :")
+    for role in current_user.roles:
+        print(role.role_type)
 
 def create_user():
     user_name=input("Enter user name: ")
@@ -75,14 +100,14 @@ def create_user():
         print(role)
 
     role=input("Enter role type: ")
-    if role not in ROLE_TYPES:
+    if is_valid_role_type(role):
         print("Invalid role type provided , please try again! ")
         create_user()
     new_user=User(user_name,[role])
 
 def edit_role(current_user):
     print("Roles assigned to "+ current_user.user_name+" : ")
-    user_roles=[role.role_type for role in current_user.roles]
+    user_roles=current_user.get_roles_of_user()
     for role in user_roles:
         print(role)
     role=input("Enter the role type you want to edit: ")
@@ -97,12 +122,6 @@ def edit_role(current_user):
         if option==1 or option==2:
             resource=input("Enter the resource name: ")
             #TODO: Call methods of instance current user
-
-
-
-
-
-
 
 
 
@@ -129,10 +148,33 @@ def check_access(user_name):
     else:
         print(user_name+" does not has "+ access_type+" access to the resource "+resource)
 
-
-
 app_init()
-user_login()
+
+while 1:
+    users_count = 1
+    print("Users in the system:")
+    print("S.NO  User ")
+    for user in USERS:
+        print(str(users_count) + "  " + user.user_name)
+        users_count += 1
+
+    user_found = False
+    user_name = input("Enter the user name to login:")
+    for user in USERS:
+        if user.user_name == user_name:
+            current_user = user
+            user_found = True
+            break
+    if user_found == False:
+        print("Invalid user name provided! Try again!")
+        continue
+    else:
+        if current_user.user_name == "admin":
+            while 1:
+                admin_options(current_user)
+        else:
+            while 1:
+                user_options(current_user)
 
 
 

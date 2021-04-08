@@ -20,6 +20,9 @@ class Role:
         self.access_to_resources=access_to_resources
         ROLES.append(self)
 
+    def get_resources(self):
+        return self.access_to_resources
+
     def add_resource(self,resource:str,access_types:List[str]=[]):
         self.access_to_resources[resource]=access_types
         
@@ -40,6 +43,13 @@ class Role:
             if access_type in self.access_to_resources[resource]:
                 self.access_to_resources[resource].remove(access_type)
         print("Access deleted for resource: "+resource)
+
+    def is_valid_resource_of_role(self,resource):
+        try:
+            self.access_to_resources[resource]
+            return True
+        except:
+            return False
     
         
         
