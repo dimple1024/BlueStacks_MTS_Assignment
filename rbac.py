@@ -111,9 +111,17 @@ def create_user():
             print("Invalid role type provided , please try again! ")
             create_user()
     roles=[]
+    role_found=False
     for role_type in role_types:
-        role=Role(role_type)
+        for existing_role in ROLES:
+            if role_type==existing_role.role_type:
+                role=existing_role
+                role_found=True
+                break
+        if role_found==False:
+            role=Role(role_type)
         roles.append(role)
+
     new_user=User(user_name,roles)
 
 def edit_role():
@@ -140,7 +148,6 @@ def edit_role():
             resource=input("Enter the resource name to add: ")
             access_types=input("Enter the access types to be added(space separated): ").split(" ")
             current_role.add_resource(resource,access_types)
-            print(current_role)
         elif option==2:
             resource = input("Enter the resource name to remove: ")
             current_role.remove_resource(resource)
